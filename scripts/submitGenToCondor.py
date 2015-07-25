@@ -2,11 +2,11 @@
 import sys
 sys.path.append("/cms/kdlong/CMSSWgen/scripts/helper_scripts")
 import subprocess
-import splitLHEFile
-import addCMSBlock
+#import splitLHEFile
+#import addCMSBlock
 import os
 import argparse
-import glob
+#import glob
  
 def main():
     args = parseComLineArgs()
@@ -50,7 +50,8 @@ def doGENSIMpLHE(params):
    
     subprocess.call(["./helper_scripts/check_permissions.sh"])
     print "Running over %s events with %s events per job" % (params["NUM_EVENTS"], params["EVENTS_PER_JOB"])
-
+   
+ 
     for i in xrange(0, int(params["NUM_EVENTS"]), int(params["EVENTS_PER_JOB"])):
         out_file = out_file.replace(".root", "_%s.root" %i)
         subprocess.call(["cmsRun", 
@@ -60,7 +61,7 @@ def doGENSIMpLHE(params):
                          "maxEvents=%s" % params["EVENTS_PER_JOB"],
                          "skipEvents=%s" % str(i)])
         print "Created file %s" % out_file
-    subprocess.call(["gsido", "mv", path_to_edm_files, "/hdfs/store/user/" + params["USERNAME"], "-r"])
+    subprocess.call(["gsido", "mv", path_to_edm_files, "/hdfs/store/user/" + params["USERNAME"]])
 # Submits the step in the generation according to the command line step argument
 # and the information in the parameter card given. Requires grid proxy
 # to allow access to HDFS. Uses rename_sim_files.sh to rename files after multiple steps 
@@ -70,10 +71,10 @@ def submitStepToCondor(step, params, opts):
     config_name = step.upper() + "_CFG"
     config_file = params[config_name] 
     
-    #if append_to_name != "":
-    #    append_to_name = "-" + append_to_name
-    #    subprocess.call(["gsido", "helper_scripts/rename_sim_files.sh",
-    #        params["JOB_NAME"], params["USERNAME"], config_name, append_to_name])
+    if append_to_name != "":
+        append_to_name = "-" + append_to_name
+        subprocess.call(["gsido", "helper_scripts/rename_sim_files.sh",
+            params["JOB_NAME"], params["USERNAME"], config_name, append_to_name])
     setupCMSSW("7_1_14")
     subprocess.call(["farmoutAnalysisJobs " 
                         + "--input-dir=root://cmsxrootd.hep.wisc.edu//store/user/"
@@ -103,7 +104,7 @@ def setupCMSSW(version):
 # Reads variables given in the param card passed as a command line argument
 def readParamsFromCard(card_name):
     vars = ["JOB_NAME","USERNAME","CMSSW_PATH","NUM_EVENTS", 
-        "EVENTS_PER_JOB","LHE_FILE","PLHE_CFG","GENSIM_MLM_MATCHING_CFG",
+        "EVENTS_PER_JOB","LHE_FILE","PLHE_CFG",
         "GENSIM_CFG", "HLT_CFG", "RECO_CFG", "PAT_CFG"] 
     card_params = {}
     for var in vars:
@@ -121,10 +122,28 @@ def readParamsFromCard(card_name):
 # Returns the name of the previous step. Necessisary for locating the appropriate input
 # directory in HDFS
 def getPreviousStep(step, params):
+    previous = {}
+    previous.update({"GENSIM" : "" })
     previous.update({"HLT" : params["GENSIM_CFG"].strip(".py") })
     previous.update({"RECO" : params["HLT_CFG"].strip(".py") })
     previous.update({"PAT" : params["RECO_CFG"].strip(".py") })
     return previous[step]
+
+
+   #Gets arguments from the command line
+def getLHENumEvents(lhe_file_name):
+    with open(lhe_file_name) as lhe_file:
+        for line in lhe_file:
+            if "#  Number of Events" in line:
+                num_events = line.split(":")[-1].strip()
+                return num_events
+    print "Invalid LHE file format. Could not read number of events."
+    exit()
+
+
+
+
+
 # formats a number to have length formatted_length regardless of it's order of
 # magnitude by appending leading zeros. e.g., formatNumWithZeros(17, 5) returns
 # 00017 
@@ -144,5 +163,10 @@ def parseComLineArgs():
                         help="name of param card") 
     args = parser.parse_args()
     return args
-if __name__ == "__main__":
+
+if __name__ == '__main__':
     main()
+
+
+
+

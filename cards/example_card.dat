@@ -5,15 +5,15 @@
 # Jan 24 2015
 
 # title of directories and files are derived from this
-JOB_NAME = GENTEST
+JOB_NAME = zprimemzp10
 
 # Your HDFS username. User $USER if your hdfs username is that same 
 # as your login username
-USERNAME = $USER
+USERNAME = tuanqui
 
 # Specify full or relative path
-LHE_FILE = /cms/$USER/CMSSWgen/processes/GENTEST/unweighted_events_000.lhe
-NUM_EVENTS = -1 #Do all events
+LHE_FILE = /cms/tuanqui/CMSSW_7_2_3/src/Zprime10000events_Mzp10.lhe
+NUM_EVENTS = -1 
 EVENTS_PER_JOB = 500
 
 # Name of config file used by each simulation step. These should be set
