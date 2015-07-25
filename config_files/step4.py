@@ -2,17 +2,10 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step2 --filein options.inputFiles --fileout options.outputFile --mc --eventcontent AODSIM,DQM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier AODSIM,DQMIO --conditions PHYS14_25_V1 --step RAW2DIGI,L1Reco,RECO,EI,DQM:DQMOfflinePOGMC --magField 38T_PostLS1 --python_filename BTV-Phys14DR-00007_2_cfg.py --no_exec -n -1
+# with command line options: step4 --filein file:step3.root --fileout file:step4.root --mc --eventcontent AODSIM,DQM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier AODSIM,DQMIO --conditions PHYS14_50_V2 --step RAW2DIGI,L1Reco,RECO,EI,DQM:DQMOfflinePOGMC --magField 38T_PostLS1 --python_filename step4.py --no_exec -n -1
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('RECO')
-# parse variables from cmsRun
-from FWCore.ParameterSet.VarParsing import VarParsing
-options = VarParsing ('analysis')
-
-options.inputFiles = ""
-options.outputFile = ""
-options.parseArguments() 
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -36,7 +29,7 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     secondaryFileNames = cms.untracked.vstring(),
-    fileNames = cms.untracked.vstring(options.inputFiles)
+    fileNames = cms.untracked.vstring($inputFileNames)
 )
 
 process.options = cms.untracked.PSet(
@@ -57,7 +50,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
     compressionAlgorithm = cms.untracked.string('LZMA'),
     eventAutoFlushCompressedSize = cms.untracked.int32(15728640),
     outputCommands = process.AODSIMEventContent.outputCommands,
-    fileName = cms.untracked.string(options.outputFile),
+    fileName = cms.untracked.string('$outputFileName'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('AODSIM')
@@ -67,7 +60,7 @@ process.AODSIMoutput = cms.OutputModule("PoolOutputModule",
 process.DQMoutput = cms.OutputModule("DQMRootOutputModule",
     splitLevel = cms.untracked.int32(0),
     outputCommands = process.DQMEventContent.outputCommands,
-    fileName = cms.untracked.string('file:OUTFILE_inDQM.root'),
+    fileName = cms.untracked.string('file:step4_inDQM.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('DQMIO')

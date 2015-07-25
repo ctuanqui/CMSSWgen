@@ -1,19 +1,11 @@
 # Auto generated configuration file
 # using: 
-# Revision: 1.20 
+# Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Configuration/GenProduction/python/ThirteenTeV/Hadronizer_Tune4C_13TeV_generic_LHE_pythia8_Tauola_cff.py --filein file:pLHE_EDM_files/wpz_all_10000_000_Fall13pLHE.root --fileout file:pLHE_EDM_files/wpz_all_10000_000_Fall13pLHE_BG2-Fall13.root --mc --eventcontent RAWSIM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier GEN-SIM --conditions POSTLS162_V1::All --step GEN,SIM --magField 38T_PostLS1 --geometry Extended2015 --python_filename B2G-Fall13-00061_1_cfg.py --no_exec -n -1
+# with command line options: Configuration/GenProduction/python/ThirteenTeV/Hadronizer_TuneCUEP8S1CTEQ6L1_13TeV_generic_LHE_pythia8_Tauola_cff.py --filein file:step1.root --fileout file:step2.root --mc --eventcontent RAWSIM --customise SLHCUpgradeSimulations/Configuration/postLS1Customs.customisePostLS1,Configuration/DataProcessing/Utils.addMonitoring --datatier GEN-SIM --conditions PHYS14_50_V2 --step GEN,SIM --magField 38T_PostLS1 --geometry Extended2015 --python_filename step2.py --no_exec -n -1
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('SIM')
-
-# parse variables from cmsRun
-from FWCore.ParameterSet.VarParsing import VarParsing
-options = VarParsing ('analysis')
-
-options.inputFiles = "file:input.root"
-options.outputFile = "step1.root"
-options.parseArguments() 
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -38,7 +30,7 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     secondaryFileNames = cms.untracked.vstring(),
-    fileNames = cms.untracked.vstring(options.inputFiles)
+    fileNames = cms.untracked.vstring($inputFileNames)
 )
 
 process.options = cms.untracked.PSet(
@@ -58,7 +50,7 @@ process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     outputCommands = process.RAWSIMEventContent.outputCommands,
-    fileName = cms.untracked.string(options.outputFile),
+    fileName = cms.untracked.string("$outputFileName"),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM')
@@ -94,17 +86,17 @@ process.generator = cms.EDFilter("Pythia8HadronizerFilter",
     comEnergy = cms.double(13000.0),
     maxEventsToPrint = cms.untracked.int32(1),
     PythiaParameters = cms.PSet(
-        pythia8CUEP8S1cteqSettings = cms.vstring('Tune:pp 5',
-            'Tune:ee 3',
-            'MultipartonInteractions:pT0Ref=2.1006',
-            'MultipartonInteractions:ecmPow=0.21057',
-            'MultipartonInteractions:expPow=1.6089',
-            'MultipartonInteractions:a1=0.00',
-            'ColourReconnection:range=3.31257'), 
-        processParameters = cms.vstring('Main:timesAllowErrors = 10000',
+        pythia8CUEP8S1cteqSettings = cms.vstring('Tune:pp 5', 
+            'Tune:ee 3', 
+            'MultipartonInteractions:pT0Ref=2.1006', 
+            'MultipartonInteractions:ecmPow=0.21057', 
+            'MultipartonInteractions:expPow=1.6089', 
+            'MultipartonInteractions:a1=0.00', 
+            'ColourReconnection:range=3.31257'),
+        processParameters = cms.vstring('Main:timesAllowErrors = 10000', 
             'ParticleDecays:tauMax = 10'),
-        parameterSets = cms.vstring('pythia8CUEP8S1cteqSettings',
-            'processParameters') 
+        parameterSets = cms.vstring('pythia8CUEP8S1cteqSettings', 
+            'processParameters')
     )
 )
 
@@ -137,3 +129,4 @@ from SLHCUpgradeSimulations.Configuration.postLS1Customs import customisePostLS1
 process = customisePostLS1(process)
 
 # End of customisation functions
+

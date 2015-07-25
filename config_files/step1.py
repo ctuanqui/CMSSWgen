@@ -1,44 +1,26 @@
 # Auto generated configuration file
 # using: 
-# Revision: 1.20 
+# Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: step1 --filein file:/cms/kdlong/CMSSWgen/wpz_zg_all/10000ev/lhe_files/wpz_all_10^4_000.lhe --fileout file:/cms/kdlong/CMSSWgen/wpz_zg_all/10000ev/lhe_files/wpz_all_10^4_000_Fall13pLHE.root --mc --eventcontent LHE --datatier GEN --conditions START62_V1::All --step NONE --python_filename /cms/kdlong/CMSSWgen/wpz_zg_all/10000ev/lhe_files/wpz_all_10^4_000_Fall13pLHE_cfg.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n -1
+# with command line options: step1 --filein file:/cms/tuanqui/CMSSW_7_2_3/src/Zprime10000events_Mzp10.lhe --fileout file:step1.root --mc --eventcontent LHE --datatier GEN --conditions PHYS14_50_V2 --step NONE --python_filename step1.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n 10000
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('LHE')
-
-# parse variables from cmsRun
-from FWCore.ParameterSet.VarParsing import VarParsing
-options = VarParsing ('analysis')
-
-options.register ('skipEvents',
-                  0,
-                  VarParsing.multiplicity.singleton,
-                  VarParsing.varType.int,
-                  "Number of events to skip before processing")
-
-options.inputFiles = "file:/cms/tuanqui/CMSSW_7_2_3/src/Zprime10000events_Mzp10.lhe"
-options.outputFile = "step1.root"
-options.maxEvents = -1
-options.skipEvents = 0
-options.parseArguments() 
 
 # import of standard configurations
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(options.maxEvents)
+    input = cms.untracked.int32(10000)
 )
 
 # Input source
 process.source = cms.Source("LHESource",
-    fileNames = cms.untracked.vstring(options.inputFiles),
-    skipEvents= cms.untracked.uint32(options.skipEvents),
-    firstEvent = cms.untracked.uint32(options.skipEvents + 1)  
-    )
+    fileNames = cms.untracked.vstring('file:/cms/tuanqui/CMSSW_7_2_3/src/Zprime10000events_Mzp10.lhe')
+)
 
 process.options = cms.untracked.PSet(
 
@@ -47,7 +29,7 @@ process.options = cms.untracked.PSet(
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.19 $'),
-    annotation = cms.untracked.string('step1 nevts:-1'),
+    annotation = cms.untracked.string('step1 nevts:10000'),
     name = cms.untracked.string('Applications')
 )
 
@@ -57,7 +39,7 @@ process.LHEoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     outputCommands = process.LHEEventContent.outputCommands,
-    fileName = cms.untracked.string(options.outputFile),
+    fileName = cms.untracked.string('file:step1.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN')
@@ -85,3 +67,4 @@ from Configuration.DataProcessing.Utils import addMonitoring
 process = addMonitoring(process)
 
 # End of customisation functions
+
